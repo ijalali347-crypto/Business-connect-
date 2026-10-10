@@ -10,7 +10,7 @@ create table public.bc_profiles (
  industry text not null check(length(industry)<=80),
  country text not null check(length(country) between 1 and 60),
  city text not null check(length(city) between 1 and 60),
- meet text[] not null check(cardinality(meet) between 1 and 30),
+ meet text[] not null check(cardinality(meet) between 1 and 250),
  bio text not null check(length(bio) between 1 and 400),
  email text not null default '' check(length(email)<=254),
  phone text not null default '' check(length(phone)<=25),
