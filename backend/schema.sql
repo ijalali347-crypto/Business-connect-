@@ -16,6 +16,9 @@ create table public.bc_profiles (
  phone text not null default '' check(length(phone)<=25),
  verified boolean not null default false,
  founder boolean not null default false,
+ verification_source text check(verification_source in ('trial','manual','paid')),
+ verified_until timestamptz,
+ trial_started_at timestamptz,
  created_at timestamptz not null default now()
 );
 create unique index bc_one_founder on public.bc_profiles(founder) where founder;
@@ -51,6 +54,7 @@ declare
  t bc_private.threads%rowtype;
  result jsonb;
  msg text;
+ expires_at timestamptz;
 begin
  if uid is null or coalesce(auth.jwt()->>'is_anonymous','false')='true' or not exists(select 1 from auth.users where id=uid and email_confirmed_at is not null) then
  raise exception 'Sign in with a confirmed account first'; end if;
@@ -67,6 +71,16 @@ begin
  insert into bc_private.contacts(user_id,email,phone,show_email,show_phone) values(uid,left(coalesce(payload->>'email',''),254),left(coalesce(payload->>'phone',''),25),coalesce((payload->>'showEmail')::boolean,false),coalesce((payload->>'showPhone')::boolean,false))
  on conflict(user_id) do update set email=excluded.email,phone=excluded.phone,show_email=excluded.show_email,show_phone=excluded.show_phone;
  return jsonb_build_object('ok',true);
+ elsif action='start_blue_trial' then
+ if not exists(select 1 from public.bc_profiles where id=uid) then raise exception 'Create your business profile first'; end if;
+ if exists(select 1 from public.bc_profiles where id=uid and founder) then raise exception 'Founder badge is already active'; end if;
+ if exists(select 1 from public.bc_profiles where id=uid and trial_started_at is not null) then raise exception 'Your one-time 7-day blue tick trial has already been used'; end if;
+ if exists(select 1 from public.bc_profiles where id=uid and verified and (verified_until is null or verified_until>now())) then raise exception 'Your blue tick is already active'; end if;
+ update public.bc_profiles
+ set verified=true,verification_source='trial',trial_started_at=now(),verified_until=now()+interval '7 days'
+ where id=uid
+ returning verified_until into expires_at;
+ return jsonb_build_object('ok',true,'verified_until',expires_at);
  elsif action='apply' then
  if not exists(select 1 from public.bc_profiles where id=uid) then raise exception 'Save your business profile first'; end if;
  if exists(select 1 from public.bc_profiles where id=uid and (verified or founder)) then raise exception 'Your profile already has a badge'; end if;
@@ -83,7 +97,11 @@ begin
  target:=(payload->>'target')::uuid;
  if payload->>'decision' not in ('approve','reject','remove') then raise exception 'Invalid badge decision'; end if;
  if exists(select 1 from public.bc_profiles where id=target and founder) then raise exception 'Founder badge cannot be changed here'; end if;
- update public.bc_profiles set verified=(payload->>'decision'='approve') where id=target;
+ update public.bc_profiles
+ set verified=(payload->>'decision'='approve'),
+ verification_source=case when payload->>'decision'='approve' then 'manual' else null end,
+ verified_until=null
+ where id=target;
  if not found then raise exception 'Profile not found'; end if;
  update bc_private.applications set status=case when payload->>'decision'='approve' then 'approved' else 'rejected' end,updated_at=now() where user_id=target;
  insert into bc_private.badge_audit(admin_id,target_id,decision) values(uid,target,payload->>'decision');
