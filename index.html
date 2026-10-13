@@ -7,6 +7,93 @@
 button:disabled{cursor:default;opacity:.55}dialog input,dialog textarea{max-width:100%}#adminRows{margin-top:18px}@media(max-width:700px){header .brand{font-size:16px}header>.primary{font-size:11px;padding:9px}.nav{padding:10px 8px}}
 .badge-button{padding:0;background:transparent;display:inline-flex;align-items:center;vertical-align:middle;border-radius:50%}.badge-button:focus-visible{outline:2px solid #6653e8;outline-offset:3px}.price-card{background:#efedff;border:1px solid #ded7ff;border-radius:14px;padding:22px;margin:20px 0}.price-amount{font:800 42px Manrope;letter-spacing:-1px;color:#17223b}.price-amount small{font:500 15px 'DM Sans';color:#727d92}
 .country-picker{width:100%;min-width:0}.country-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;max-height:140px;overflow:auto}.country-chip{font-size:11px;background:#efedff;color:#5946bb;border-radius:8px;padding:7px 9px;text-align:left}.country-dropdown{border:1px solid #e4e7f0;border-radius:10px;background:#f8f9fc;padding:10px}.country-dropdown summary{cursor:pointer;font-size:12px;line-height:1.5;color:#35415c}.country-count{color:#6653e8;font-weight:700}.country-search{margin:10px 0 6px;background:white;font-size:12px}.country-options{max-height:220px;overflow:auto}.country-option{display:flex;gap:9px;align-items:center;padding:9px 3px;font-size:12px;cursor:pointer}.country-option input{width:16px;height:16px;margin:0;flex-shrink:0;accent-color:#6653e8}@media(max-width:700px){.filters>.country-picker{width:100%}.filters>.label{display:block;width:100%;margin:8px 0 0}}
+
+/* Bright surfaces, stronger typography and readable text. */
+body{color:#142033;font-weight:500}
+body.dialog-open{overflow:hidden}
+.brand,h1,h2,h3,.name{font-family:Manrope,'DM Sans',sans-serif;font-weight:800}
+.brand{color:#14213b}
+.hero{background:linear-gradient(120deg,#eeebff 0%,#f8faff 52%,#eaf3ff 100%);color:#14213b}
+.hero:after{border-color:#9686db26}
+.hero h1{color:#121e36;line-height:1.16;letter-spacing:-1.4px}
+.hero h1 span{color:#3f2b87}
+.hero p{color:#34425b;font-weight:500}
+.eyebrow{color:#4c3194}
+.tags{color:#35425b;font-weight:600}
+.nav{color:#35425b;font-weight:600}
+.nav.active,.switch button.active{color:#4d30a9}
+.primary{background:#5039c2;box-shadow:0 3px 10px #5039c21a}
+.primary:hover{background:#422cae}
+.outline{color:#21304b;font-weight:600;border-color:#ced5e2}
+h2,h3,.name,.heading h2{color:#14213b;letter-spacing:-.035em}
+.muted,.price-amount small{color:#4b586c}
+.label{color:#1c2a42;font-size:13px}
+select,input,textarea{color:#1d2b43;border-color:#d0d7e5;font-weight:500}
+input::placeholder,textarea::placeholder{color:#59677c;opacity:1}
+.check{color:#2f3c53;font-weight:500}
+.card{border-color:#d9deeb;box-shadow:0 5px 20px #14213b05}
+.name{font-size:20px;line-height:1.4}
+.role{color:#35425b;font-size:13px;font-weight:600}
+.bio{color:#29374d;font-size:14px;line-height:1.75}
+.location,.meet,.step{color:#35425b;font-weight:500}
+.meet b{color:#172740}
+.pill{color:#4c2d90;font-weight:700}
+.promo p{color:#493b66}
+.notice{color:#4c4165;background:#fbfaff}
+.num,.save,.country-chip{color:#49329c}
+.country-dropdown summary,.country-option{color:#29384e;font-weight:600}
+.country-count{color:#49329c}
+.switch button,footer,.empty{color:#46566c}
+button:focus-visible,a:focus-visible{outline:3px solid #7453cc;outline-offset:3px}
+.profile-name{background:transparent;color:inherit;font:inherit;letter-spacing:inherit;padding:0;text-align:left;line-height:inherit}
+.profile-name:hover{text-decoration:underline;text-underline-offset:4px}
+
+/* Full-screen business profiles. Other dialogs keep their compact layout. */
+dialog.profile-fullscreen{position:fixed;inset:0;margin:0;width:100vw;max-width:none;height:100vh;height:100dvh;max-height:none;padding:0;border-radius:0;background:#f6f7fb;color:#142033;overflow:auto;overscroll-behavior:contain;box-shadow:none}
+.profile-fullscreen #dialogContent{min-height:100%;width:100%}
+.profile-fullscreen>.close{position:fixed;top:18px;left:clamp(18px,4vw,64px);z-index:4;float:none;width:auto;height:40px;padding:0 14px;display:flex;align-items:center;gap:8px;border:1px solid #d4daea;border-radius:10px;background:#f2f3fb;color:#1c2b44;font-size:13px;font-weight:700}
+.profile-page{min-height:100%;padding-bottom:40px}
+.profile-toolbar{position:sticky;top:0;z-index:3;height:76px;display:flex;align-items:center;justify-content:flex-end;padding:0 clamp(18px,4vw,64px);background:#ffffffed;border-bottom:1px solid #dce1ed;backdrop-filter:blur(12px)}
+.profile-topmark{font:800 18px Manrope,sans-serif;color:#14213b;letter-spacing:-.7px}
+.profile-topmark span{color:#5039c2}
+.profile-banner{height:200px;background:linear-gradient(115deg,#e5dfff,#ecf2ff 55%,#d8eee9);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:flex-end;padding:0 max(5%,calc((100vw - 1100px)/2))}
+.profile-banner:before,.profile-banner:after{content:'';position:absolute;border:1px solid #ffffffb3;border-radius:50%;width:340px;height:340px;right:-40px;top:-100px;pointer-events:none}
+.profile-banner:after{width:240px;height:240px;right:10px;top:-50px;border-width:28px;border-color:#ffffff40}
+.profile-banner-wordmark{position:relative;z-index:1;max-width:72%;font:800 clamp(24px,4vw,44px)/1.2 Manrope,sans-serif;letter-spacing:-1px;color:#334465;overflow-wrap:anywhere;text-align:right}
+.profile-inner{max-width:1200px;margin:auto;padding:0 40px}
+.profile-header{display:grid;grid-template-columns:132px minmax(0,1fr) auto;gap:24px;align-items:start;padding:28px 0 34px}
+.profile-avatar{width:128px;height:128px;margin-top:-78px;border:6px solid white;border-radius:30px;background:linear-gradient(145deg,#6350d4,#34216f);color:white;display:grid;place-items:center;font:800 40px Manrope,sans-serif;box-shadow:0 10px 30px #36257024;position:relative}
+.profile-kicker{font-size:11px;line-height:1.4;font-weight:800;letter-spacing:1.7px;text-transform:uppercase;color:#4c3194;margin:0 0 10px}
+.profile-heading{font-size:clamp(27px,3.5vw,40px);line-height:1.2;color:#121e36;letter-spacing:-1.2px;margin:0 0 12px;overflow-wrap:anywhere}
+.profile-heading .verification-badge{width:28px;height:28px;vertical-align:-2px}
+.profile-role{color:#293851;font-size:16px;font-weight:600;line-height:1.6;margin:0 0 8px;overflow-wrap:anywhere}
+.profile-role strong{color:#14213b;font-weight:800}
+.profile-location{color:#3d4c63;font-size:14px;margin:0;line-height:1.6;overflow-wrap:anywhere}
+.profile-action-stack{display:grid;gap:10px;min-width:185px;padding-top:12px}
+.profile-fullscreen .profile-action-stack .primary{margin:0;width:100%}
+.profile-action-stack .outline{width:100%}
+.profile-columns{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:24px;align-items:start}
+.profile-main,.profile-sidebar{min-width:0}
+.profile-section{background:white;border:1px solid #d9dfed;border-radius:18px;padding:28px;margin-bottom:22px;box-shadow:0 6px 24px #14213b04}
+.profile-section h2{font-size:20px;margin:0 0 18px;color:#14213b}
+.profile-bio{font-size:16px;line-height:1.85;color:#26364d;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.profile-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:0}
+.profile-facts div{min-width:0}
+.profile-facts dt{color:#4b586c;font-size:12px;font-weight:700;margin-bottom:7px}
+.profile-facts dd{color:#15243d;font-size:15px;font-weight:700;line-height:1.6;margin:0;overflow-wrap:anywhere}
+.profile-meeting-list{display:flex;flex-wrap:wrap;gap:9px}
+.profile-meeting-list span{background:#efedff;color:#3f287b;border:1px solid #ddd6f4;border-radius:9px;padding:10px 12px;font-size:13px;font-weight:700;overflow-wrap:anywhere;max-width:100%}
+.profile-contact{display:block;border:1px solid #d6dce9;border-radius:12px;padding:14px 16px;margin-top:12px;text-decoration:none;background:#f8f9fd;color:#21304b}
+.profile-contact:hover{border-color:#8a78c9;background:#f2efff}
+.profile-contact strong{display:block;font-size:14px;margin-bottom:5px;color:#352274}
+.profile-contact span{display:block;font-size:13px;color:#34445c;overflow-wrap:anywhere}
+.profile-contact-note,.profile-message-note{font-size:14px;line-height:1.75;color:#3d4b61;margin:0;overflow-wrap:anywhere}
+.profile-message-note{font-size:12px;margin-top:16px;padding-top:16px;border-top:1px solid #e3e7f0}
+.profile-fullscreen .toast{z-index:5}
+@media(max-width:950px){.profile-header{grid-template-columns:112px minmax(0,1fr);gap:22px}.profile-avatar{width:108px;height:108px;font-size:35px;border-radius:26px}.profile-action-stack{grid-column:1/-1;display:flex;padding-top:0;min-width:0}.profile-action-stack button{flex:1}.profile-fullscreen .profile-action-stack .primary{width:auto}.profile-columns{grid-template-columns:1fr}.profile-sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}}
+@media(max-width:600px){.profile-toolbar{height:70px;padding:0 18px}.profile-topmark{font-size:16px}.profile-fullscreen>.close{left:14px;top:15px;padding:0 11px;font-size:12px}.profile-banner{height:150px;padding:0 22px}.profile-banner-wordmark{font-size:26px;max-width:74%}.profile-inner{padding:0 18px}.profile-header{grid-template-columns:88px minmax(0,1fr);gap:16px;padding-top:22px;padding-bottom:24px}.profile-avatar{width:86px;height:86px;margin-top:-52px;border-width:5px;border-radius:22px;font-size:29px}.profile-kicker{font-size:10px;letter-spacing:1px;margin-bottom:8px}.profile-heading{font-size:27px;letter-spacing:-.8px}.profile-role{font-size:14px}.profile-location{font-size:13px}.profile-action-stack{gap:10px}.profile-action-stack button{font-size:12px;padding:12px 10px}.profile-section{padding:22px;border-radius:15px;margin-bottom:18px}.profile-section h2{font-size:19px}.profile-bio{font-size:15px}.profile-sidebar{display:block}.profile-facts{gap:20px}.profile-facts dd{font-size:14px}}
+@media(max-width:380px){.profile-facts{grid-template-columns:1fr}.profile-topmark{font-size:14px}.profile-banner-wordmark{font-size:23px}}
+
 </style></head><body>
 <header><a class="brand" href="./" style="text-decoration:none"><span class="logo">bc</span> Business Connect<span style="color:#6653e8">.</span></a><nav><button class="nav active" data-tab="discover">⌘ Discover</button><button class="nav" data-tab="saved">♡ Connections</button><button class="nav" data-tab="messages">◷ Messages</button><button class="nav" data-tab="admin" id="adminNav" hidden>✧ Founder</button></nav><button class="primary" id="profile">Sign in / Join ↗</button></header>
 <section class="hero"><div class="eyebrow">Big ideas. Meaningful connections.</div><h1>Your next opportunity<br>starts with a <span>connection.</span></h1><p>Meet the founders, suppliers and partners who can help your business grow. From your city to anywhere in the world.</p><div class="tags"><span>✧ Every business is welcome</span><span>◎ Connect across borders</span><span>↗ Grow together</span></div></section>
@@ -83,9 +170,21 @@ function read(k,f){try{return JSON.parse(localStorage.getItem(k))||f}catch{retur
 function persist(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{toast('Device storage is unavailable')}}
 function toast(t){$('toast').textContent=t;$('toast').style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').style.display='none',5000)}
 let dialogGeneration=0;
-function open(content){dialogGeneration++;$('dialogContent').innerHTML=content;if(!$('modal').open)$('modal').showModal();return dialogGeneration}
+function open(content,{fullScreen=false,label='Business Connect'}={}){
+dialogGeneration++;
+const modal=$('modal'),close=modal.querySelector('.close');
+modal.classList.toggle('profile-fullscreen',fullScreen);
+modal.setAttribute('aria-label',label);
+close.innerHTML=fullScreen?'← <span>Back to people</span>':'×';
+close.setAttribute('aria-label',fullScreen?'Back to people':'Close dialog');
+$('dialogContent').innerHTML=content;
+modal.scrollTop=0;
+if(!modal.open)modal.showModal();
+document.body.classList.add('dialog-open');
+return dialogGeneration;
+}
 $('modal').querySelector('.close').onclick=()=>$('modal').close();
-$('modal').addEventListener('close',()=>dialogGeneration++);
+$('modal').addEventListener('close',()=>{dialogGeneration++;document.body.classList.remove('dialog-open');$('modal').classList.remove('profile-fullscreen')});
 function fail(e){toast(e.message||'Something went wrong. Please try again')}
 function bind(id,fn){$(id).onclick=()=>Promise.resolve().then(fn).catch(fail)}
 function badge(p){return p.founder?"<svg class=\"verification-badge founder\" style=\"width:32px;height:32px\" viewBox=\"0 0 24 24\" role=\"img\" aria-label=\"Founder of Business Connect\"><path fill=\"currentColor\" d=\"m12 1.5 2.7 1.7 3.2-.1 1.1 3 2.7 1.7-.7 3.2 1.2 3-2.3 2.3-.7 3.1-3.2.4-2.7 1.7-2.7-1.7-3.2-.4-.7-3.1L2.4 14l1.2-3-.7-3.2L5.6 6l1.1-3 3.2.1Z\"/><path fill=\"none\" stroke=\"white\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m7.3 12.1 3 3 6.4-6.4\"/></svg>":p.verified?"<button type=\"button\" class=\"badge-button\" data-verification aria-label=\"Blue tick — $5 USD per month or $30 USD per year\"><svg class=\"verification-badge\" viewBox=\"0 0 24 24\" role=\"img\" aria-label=\"Verified profile\"><path fill=\"currentColor\" d=\"m12 1.5 2.7 1.7 3.2-.1 1.1 3 2.7 1.7-.7 3.2 1.2 3-2.3 2.3-.7 3.1-3.2.4-2.7 1.7-2.7-1.7-3.2-.4-.7-3.1L2.4 14l1.2-3-.7-3.2L5.6 6l1.1-3 3.2.1Z\"/><path fill=\"none\" stroke=\"white\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m7.3 12.1 3 3 6.4-6.4\"/></svg></button>":''}
@@ -95,10 +194,20 @@ function saveKey(){return 'bc:saved:'+(user?.id||'guest')}
 async function rpc(action,payload={}){if(!client)throw Error('Account service could not load. Check your connection.');const {data,error}=await client.rpc('bc_action',{action,payload});if(error)throw error;return data}
 async function loadMe(){me=user?await rpc('me'):null;$('adminNav').hidden=!me?.admin;$('profile').textContent=user?'My account ↗':'Sign in / Join ↗';saved=read(saveKey(),[])}
 async function loadProfiles(){if(!client)throw Error('Account service could not load. Refresh after checking your connection.');const {data,error}=await client.from('bc_profiles').select('*').order('created_at',{ascending:false}).limit(1000);if(error){loadError=true;throw error}loadError=false;profiles=data||[];render()}
-function render(){let q=$('query').value.toLowerCase().trim();current=profiles.filter(p=>(tab!=='saved'||saved.includes(p.id))&&(!$('industry').value||p.industry===$('industry').value)&&countryMatches(p.meet,selectedCountries)&&(!$('verified').checked||p.verified||p.founder)&&(!q||[p.name,p.company,p.role,p.bio,p.industry,p.city,p.country].join(' ').toLowerCase().includes(q))).sort((a,b)=>Number(b.founder||b.verified)-Number(a.founder||a.verified));$('title').textContent=tab==='saved'?'Your connections':'Discover people';$('count').textContent=current.length+' profiles · verified profiles appear first';$('controls').hidden=mode!=='swipe'||!current.length;$('results').className=mode==='swipe'?'swipe':'';if(index>=current.length)index=0;let shown=mode==='swipe'?current.slice(index,index+1):current;$('cards').innerHTML=shown.map(p=>'<article class="card"><div class="cover"></div><div class="body"><div class="avatar">'+esc(p.name.trim().split(/\s+/).map(x=>x[0]).slice(0,2).join(''))+'</div><div class="name">'+esc(p.name)+' '+badge(p)+'</div><div class="role">'+esc(p.role)+' · '+esc(p.company)+'</div><p class="bio">'+esc(p.bio)+'</p><span class="pill">'+esc(p.industry)+'</span><div class="location">◎ '+esc(p.city)+', '+esc(p.country)+'</div><div class="meet"><b>Available to meet</b>'+esc(p.meet.join(' · '))+'</div><div class="actions"><button class="primary" data-view="'+p.id+'">View profile ↗</button><button class="save" data-save="'+p.id+'" aria-label="Save '+esc(p.name)+'">'+(saved.includes(p.id)?'♥':'♡')+'</button></div></div></article>').join('')||'<div class="empty">'+(loadError?'Profiles could not load. Please refresh.':profiles.length?'No profiles match your filters.':'Be the first to join. Sign in and publish your business profile.')+'</div>';$('cards').querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>save(b.dataset.save));$('cards').querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view))}
+function render(){let q=$('query').value.toLowerCase().trim();current=profiles.filter(p=>(tab!=='saved'||saved.includes(p.id))&&(!$('industry').value||p.industry===$('industry').value)&&countryMatches(p.meet,selectedCountries)&&(!$('verified').checked||p.verified||p.founder)&&(!q||[p.name,p.company,p.role,p.bio,p.industry,p.city,p.country].join(' ').toLowerCase().includes(q))).sort((a,b)=>Number(b.founder||b.verified)-Number(a.founder||a.verified));$('title').textContent=tab==='saved'?'Your connections':'Discover people';$('count').textContent=current.length+' profiles · verified profiles appear first';$('controls').hidden=mode!=='swipe'||!current.length;$('results').className=mode==='swipe'?'swipe':'';if(index>=current.length)index=0;let shown=mode==='swipe'?current.slice(index,index+1):current;$('cards').innerHTML=shown.map(p=>'<article class="card"><div class="cover"></div><div class="body"><div class="avatar">'+esc(p.name.trim().split(/\s+/).map(x=>x[0]).slice(0,2).join(''))+'</div><div class="name"><button type="button" class="profile-name" data-view="'+esc(p.id)+'">'+esc(p.name)+'</button> '+badge(p)+'</div><div class="role">'+esc(p.role)+' · '+esc(p.company)+'</div><p class="bio">'+esc(p.bio)+'</p><span class="pill">'+esc(p.industry)+'</span><div class="location">◎ '+esc(p.city)+', '+esc(p.country)+'</div><div class="meet"><b>Available to meet</b>'+esc(p.meet.join(' · '))+'</div><div class="actions"><button class="primary" data-view="'+p.id+'">View profile ↗</button><button class="save" data-save="'+p.id+'" aria-label="Save '+esc(p.name)+'">'+(saved.includes(p.id)?'♥':'♡')+'</button></div></div></article>').join('')||'<div class="empty">'+(loadError?'Profiles could not load. Please refresh.':profiles.length?'No profiles match your filters.':'Be the first to join. Sign in and publish your business profile.')+'</div>';$('cards').querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>save(b.dataset.save));$('cards').querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view))}
 function save(id){saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];persist(saveKey(),saved);render()}
 function requireLogin(){if(user)return true;authForm();return false}
-function view(id){const p=profiles.find(p=>p.id===id);if(!p)return;open('<h2>'+esc(p.name)+' '+badge(p)+'</h2><p class="muted">'+esc(p.role)+' at '+esc(p.company)+'</p><p>'+esc(p.bio)+'</p><p class="meet"><b>Available to meet</b>'+esc(p.meet.join(' · '))+'</p><h3 style="margin-top:20px">Contact preferences</h3>'+(p.email?'<p><a href="mailto:'+esc(p.email)+'">Email</a></p>':'')+(p.phone?'<p><a target="_blank" rel="noopener" href="https://wa.me/'+p.phone.replace(/\D/g,'')+'">WhatsApp</a></p>':'')+(!p.email&&!p.phone?'<p class="muted">Contact details are private. Connect through messages.</p>':'')+(user?.id===id?'<button class="primary" id="editSelf">Edit my profile</button>':'<button class="primary" id="message">Message within Business Connect</button><p class="muted">Send up to 3 messages before the receiver accepts. No phone number or email is shared.</p>'));if($('editSelf'))bind('editSelf',profileForm);if($('message'))bind('message',()=>chat(id))}
+function profileInitials(name){return String(name||'').trim().split(/\s+/).map(part=>part[0]).slice(0,2).join('').toUpperCase()||'BC'}
+function view(id){
+const p=profiles.find(profile=>profile.id===id);if(!p)return;
+const own=user?.id===id,meet=Array.isArray(p.meet)?p.meet:[];
+const contactLinks=(p.email?'<a class="profile-contact" href="mailto:'+esc(p.email)+'"><strong>Email</strong><span>'+esc(p.email)+'</span></a>':'')+(p.phone?'<a class="profile-contact" target="_blank" rel="noopener" href="https://wa.me/'+String(p.phone).replace(/\D/g,'')+'"><strong>WhatsApp</strong><span>'+esc(p.phone)+'</span></a>':'');
+const details=[['Business name',p.company],['Industry',p.industry],['Role',p.role],['Location',[p.city,p.country].filter(Boolean).join(', ')]];
+open('<section class="profile-page" aria-labelledby="profileName"><div class="profile-toolbar"><span class="profile-topmark">Business Connect<span>.</span></span></div><div class="profile-banner" aria-hidden="true"><span class="profile-banner-wordmark">'+esc(p.company)+'</span></div><div class="profile-inner"><div class="profile-header"><div class="profile-avatar" aria-hidden="true">'+esc(profileInitials(p.name))+'</div><div class="profile-identity"><p class="profile-kicker">'+(p.founder?'Founder profile':p.verified?'Verified business profile':'Business profile')+'</p><h1 class="profile-heading" id="profileName">'+esc(p.name)+' '+badge(p)+'</h1><p class="profile-role">'+esc(p.role)+' at <strong>'+esc(p.company)+'</strong></p><p class="profile-location">◎ '+esc([p.city,p.country].filter(Boolean).join(', '))+'</p></div><div class="profile-action-stack">'+(own?'<button type="button" class="primary" id="editSelf">Edit my profile</button>':'<button type="button" class="primary" id="message">Send a message</button><button type="button" class="outline" id="profileSave">'+(saved.includes(id)?'♥ Connection saved':'♡ Save connection')+'</button>')+'</div></div><div class="profile-columns"><div class="profile-main"><section class="profile-section"><h2>About the business</h2><p class="profile-bio">'+esc(p.bio)+'</p></section><section class="profile-section"><h2>Business details</h2><dl class="profile-facts">'+details.map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value||'Not listed')+'</dd></div>').join('')+'</dl></section></div><aside class="profile-sidebar"><section class="profile-section"><h2>Available to meet</h2><div class="profile-meeting-list">'+(meet.length?meet.map(country=>'<span>'+esc(country)+'</span>').join(''):'<p class="profile-contact-note">Meeting countries have not been listed.</p>')+'</div></section><section class="profile-section"><h2>Contact &amp; connect</h2>'+ (contactLinks||'<p class="profile-contact-note">'+(own?'Your contact details are private. Other people can send you a message through Business Connect.':'This person keeps their contact details private. Connect through messages on Business Connect.')+'</p>')+(!own?'<p class="profile-message-note">Send up to 3 messages before the receiver accepts your request.</p>':'')+'</section></aside></div></div></section>',{fullScreen:true,label:p.name+' — Business profile'});
+if($('editSelf'))bind('editSelf',profileForm);
+if($('message'))bind('message',()=>chat(id));
+if($('profileSave'))bind('profileSave',()=>{save(id);$('profileSave').textContent=saved.includes(id)?'♥ Connection saved':'♡ Save connection'});
+}
 function authForm(signup=false){open('<h2>'+(signup?'Join Business Connect':'Welcome back')+'</h2><p class="muted">Your sign-in email is private. Profile contact details are optional.</p><form id="authForm"><label class="label">Email</label><input id="authEmail" type="email" required autocomplete="email"><label class="label">Password</label><input id="authPassword" type="password" required minlength="8" autocomplete="'+(signup?'new-password':'current-password')+'"><button id="authSubmit" type="submit" class="primary">'+(signup?'Create account':'Sign in')+'</button><p id="authError" class="muted" role="status"></p></form><button class="outline" id="authSwitch">'+(signup?'Already have an account? Sign in':'New here? Create an account')+'</button><button class="outline" id="confirmCode" style="margin-top:12px">Confirm email with a code</button>');
 $('authSwitch').onclick=()=>authForm(!signup);$('confirmCode').onclick=confirmForm;
 $('authForm').onsubmit=async e=>{e.preventDefault();const button=$('authSubmit');button.disabled=true;try{if(!client)throw Error('Account service unavailable. Refresh and try again.');const email=$('authEmail').value.trim(),password=$('authPassword').value;let result=signup?await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}}):await client.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(!result.data.session){$('authError').textContent='Check your email and confirm your account, then return here to sign in. If you receive a code, use the confirmation button below.';return}user=result.data.user;await loadMe();await loadProfiles();$('modal').close();toast('Signed in');if(!me?.profile)profileForm()}catch(err){if($('authError'))$('authError').textContent=err.message||'Could not sign in'}finally{button.disabled=false}}}
