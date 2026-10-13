@@ -19,6 +19,7 @@ create table public.bc_profiles (
  verification_source text check(verification_source in ('trial','manual','paid')),
  verified_until timestamptz,
  trial_started_at timestamptz,
+ trial_number smallint unique check(trial_number between 1 and 100),
  created_at timestamptz not null default now()
 );
 create unique index bc_one_founder on public.bc_profiles(founder) where founder;
@@ -55,12 +56,13 @@ declare
  result jsonb;
  msg text;
  expires_at timestamptz;
+ trial_count integer;
 begin
  if uid is null or coalesce(auth.jwt()->>'is_anonymous','false')='true' or not exists(select 1 from auth.users where id=uid and email_confirmed_at is not null) then
  raise exception 'Sign in with a confirmed account first'; end if;
  is_admin := exists(select 1 from bc_private.admins where user_id=uid);
  if action='me' then
- return jsonb_build_object('id',uid,'admin',is_admin,'profile',(select to_jsonb(p) from public.bc_profiles p where id=uid),'contacts',(select to_jsonb(c) from bc_private.contacts c where user_id=uid),'application',(select to_jsonb(a) from bc_private.applications a where user_id=uid));
+ return jsonb_build_object('id',uid,'admin',is_admin,'profile',(select to_jsonb(p) from public.bc_profiles p where id=uid),'contacts',(select to_jsonb(c) from bc_private.contacts c where user_id=uid),'application',(select to_jsonb(a) from bc_private.applications a where user_id=uid),'trial_slots_remaining',greatest(0,100-(select count(*) from public.bc_profiles where trial_started_at is not null)));
  elsif action='save_profile' then
  if jsonb_typeof(payload->'meet')<>'array' then raise exception 'Choose meeting countries'; end if;
  insert into public.bc_profiles(id,name,role,company,industry,country,city,meet,bio,email,phone)
@@ -74,13 +76,16 @@ begin
  elsif action='start_blue_trial' then
  if not exists(select 1 from public.bc_profiles where id=uid) then raise exception 'Create your business profile first'; end if;
  if exists(select 1 from public.bc_profiles where id=uid and founder) then raise exception 'Founder badge is already active'; end if;
- if exists(select 1 from public.bc_profiles where id=uid and trial_started_at is not null) then raise exception 'Your one-time 7-day blue tick trial has already been used'; end if;
+ if exists(select 1 from public.bc_profiles where id=uid and trial_started_at is not null) then raise exception 'Your free blue tick launch offer has already been used'; end if;
  if exists(select 1 from public.bc_profiles where id=uid and verified and (verified_until is null or verified_until>now())) then raise exception 'Your blue tick is already active'; end if;
+ perform pg_advisory_xact_lock(hashtext('bc_blue_tick_trial_slots'));
+ select count(*) into trial_count from public.bc_profiles where trial_started_at is not null;
+ if trial_count>=100 then raise exception 'This launch offer is no longer available'; end if;
  update public.bc_profiles
- set verified=true,verification_source='trial',trial_started_at=now(),verified_until=now()+interval '7 days'
+ set verified=true,verification_source='trial',trial_started_at=now(),trial_number=trial_count+1,verified_until=now()+interval '3 months'
  where id=uid
  returning verified_until into expires_at;
- return jsonb_build_object('ok',true,'verified_until',expires_at);
+ return jsonb_build_object('ok',true,'verified_until',expires_at,'trial_number',trial_count+1);
  elsif action='apply' then
  if not exists(select 1 from public.bc_profiles where id=uid) then raise exception 'Save your business profile first'; end if;
  if exists(select 1 from public.bc_profiles where id=uid and (verified or founder)) then raise exception 'Your profile already has a badge'; end if;
