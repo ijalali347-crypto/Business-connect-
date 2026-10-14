@@ -77,8 +77,8 @@ begin
  case when coalesce((payload->>'showEmail')::boolean,false) then coalesce(payload->>'email','') else '' end,
  case when coalesce((payload->>'showPhone')::boolean,false) then coalesce(payload->>'phone','') else '' end)
  on conflict(id) do update set name=excluded.name,role=excluded.role,company=excluded.company,industry=excluded.industry,country=excluded.country,city=excluded.city,meet=excluded.meet,bio=excluded.bio,business_logo_url=excluded.business_logo_url,business_cover_url=excluded.business_cover_url,email=excluded.email,phone=excluded.phone;
- insert into bc_private.contacts(user_id,email,phone,show_email,show_phone) values(uid,left(coalesce(payload->>'email',''),254),left(coalesce(payload->>'phone',''),25),coalesce((payload->>'showEmail')::boolean,false),coalesce((payload->>'showPhone')::boolean,false))
- on conflict(user_id) do update set email=excluded.email,phone=excluded.phone,show_email=excluded.show_email,show_phone=excluded.show_phone;
+ insert into bc_private.contacts(user_id,email,phone,show_email,show_phone) values(uid,coalesce(nullif(left(coalesce(payload->>'email',''),254),''),(select email from auth.users where id=uid)),left(coalesce(payload->>'phone',(select phone from bc_private.contacts where user_id=uid),''),25),false,false)
+ on conflict(user_id) do update set email=excluded.email,phone=excluded.phone,show_email=false,show_phone=false;
  insert into bc_private.founder_reviews(user_id,legal_name,business_address,business_website) values(uid,left(btrim(coalesce(payload->>'legal_name','')),120),left(btrim(coalesce(payload->>'business_address','')),300),left(btrim(coalesce(payload->>'business_website','')),500)) on conflict(user_id) do update set legal_name=excluded.legal_name,business_address=excluded.business_address,business_website=excluded.business_website,updated_at=now();
  return jsonb_build_object('ok',true);
  elsif action='start_blue_trial' then
