@@ -12,6 +12,7 @@ create table public.bc_profiles (
  city text not null check(length(city) between 1 and 60),
  meet text[] not null check(cardinality(meet) between 1 and 250),
  bio text not null check(length(bio) between 1 and 400),
+ business_logo_url text not null default '' check(length(business_logo_url)<=500),
  email text not null default '' check(length(email)<=254),
  phone text not null default '' check(length(phone)<=25),
  verified boolean not null default false,
@@ -25,11 +26,14 @@ create table public.bc_profiles (
 create unique index bc_one_founder on public.bc_profiles(founder) where founder;
 alter table public.bc_profiles enable row level security;
 revoke all on public.bc_profiles from anon, authenticated;
-grant select on public.bc_profiles to anon, authenticated;
 create policy bc_public_profiles on public.bc_profiles for select to anon,authenticated using(true);
+create view public.bc_profiles_public with (security_barrier=true) as select id,name,role,company,industry,country,city,meet,bio,business_logo_url,verified,founder,verification_source,verified_until,created_at from public.bc_profiles;
+revoke all on public.bc_profiles_public from public;
+grant select on public.bc_profiles_public to anon,authenticated;
 
 create table bc_private.admins(user_id uuid primary key references auth.users(id), created_at timestamptz not null default now());
 create table bc_private.contacts(user_id uuid primary key references public.bc_profiles(id) on delete cascade, email text not null default '', phone text not null default '', show_email boolean not null default false, show_phone boolean not null default false);
+create table bc_private.founder_reviews(user_id uuid primary key references public.bc_profiles(id) on delete cascade, legal_name text not null default '' check(length(legal_name)<=120), business_address text not null default '' check(length(business_address)<=300), business_website text not null default '' check(length(business_website)<=500), updated_at timestamptz not null default now());
 create table bc_private.applications(user_id uuid primary key references public.bc_profiles(id) on delete cascade, status text not null default 'pending' check(status in ('pending','approved','rejected')), business_url text not null check(length(business_url)<=500), note text not null check(length(note)<=2000), updated_at timestamptz not null default now());
 create table bc_private.badge_audit(id bigint generated always as identity primary key, admin_id uuid not null, target_id uuid not null, decision text not null, created_at timestamptz not null default now());
 create table bc_private.threads(id uuid primary key default gen_random_uuid(), starter uuid not null references public.bc_profiles(id), receiver uuid not null references public.bc_profiles(id), status text not null default 'pending' check(status in ('pending','accepted','declined')), pair_a uuid generated always as (least(starter,receiver)) stored, pair_b uuid generated always as (greatest(starter,receiver)) stored, created_at timestamptz not null default now(), unique(pair_a,pair_b), check(starter<>receiver));
@@ -39,6 +43,7 @@ create table bc_private.messages(id bigint generated always as identity primary 
 create index bc_messages_thread on bc_private.messages(thread_id,id);
 alter table bc_private.admins enable row level security;
 alter table bc_private.contacts enable row level security;
+alter table bc_private.founder_reviews enable row level security;
 alter table bc_private.applications enable row level security;
 alter table bc_private.badge_audit enable row level security;
 alter table bc_private.threads enable row level security;
@@ -62,16 +67,17 @@ begin
  raise exception 'Sign in with a confirmed account first'; end if;
  is_admin := exists(select 1 from bc_private.admins where user_id=uid);
  if action='me' then
- return jsonb_build_object('id',uid,'admin',is_admin,'profile',(select to_jsonb(p) from public.bc_profiles p where id=uid),'contacts',(select to_jsonb(c) from bc_private.contacts c where user_id=uid),'application',(select to_jsonb(a) from bc_private.applications a where user_id=uid),'trial_slots_remaining',greatest(0,100-(select count(*) from public.bc_profiles where trial_started_at is not null)));
+ return jsonb_build_object('id',uid,'admin',is_admin,'profile',(select to_jsonb(p) from public.bc_profiles p where id=uid),'contacts',(select to_jsonb(c) from bc_private.contacts c where user_id=uid),'founder_review',(select to_jsonb(r) from bc_private.founder_reviews r where user_id=uid),'application',(select to_jsonb(a) from bc_private.applications a where user_id=uid),'trial_slots_remaining',greatest(0,100-(select count(*) from public.bc_profiles where trial_started_at is not null)));
  elsif action='save_profile' then
  if jsonb_typeof(payload->'meet')<>'array' then raise exception 'Choose meeting countries'; end if;
- insert into public.bc_profiles(id,name,role,company,industry,country,city,meet,bio,email,phone)
- values(uid,btrim(payload->>'name'),btrim(payload->>'role'),btrim(payload->>'company'),payload->>'industry',btrim(payload->>'country'),btrim(payload->>'city'),array(select jsonb_array_elements_text(payload->'meet')),btrim(payload->>'bio'),
+ insert into public.bc_profiles(id,name,role,company,industry,country,city,meet,bio,business_logo_url,email,phone)
+ values(uid,btrim(payload->>'name'),btrim(payload->>'role'),btrim(payload->>'company'),payload->>'industry',btrim(payload->>'country'),btrim(payload->>'city'),array(select jsonb_array_elements_text(payload->'meet')),btrim(payload->>'bio'),left(coalesce(payload->>'business_logo_url',''),500),
  case when coalesce((payload->>'showEmail')::boolean,false) then coalesce(payload->>'email','') else '' end,
  case when coalesce((payload->>'showPhone')::boolean,false) then coalesce(payload->>'phone','') else '' end)
- on conflict(id) do update set name=excluded.name,role=excluded.role,company=excluded.company,industry=excluded.industry,country=excluded.country,city=excluded.city,meet=excluded.meet,bio=excluded.bio,email=excluded.email,phone=excluded.phone;
+ on conflict(id) do update set name=excluded.name,role=excluded.role,company=excluded.company,industry=excluded.industry,country=excluded.country,city=excluded.city,meet=excluded.meet,bio=excluded.bio,business_logo_url=excluded.business_logo_url,email=excluded.email,phone=excluded.phone;
  insert into bc_private.contacts(user_id,email,phone,show_email,show_phone) values(uid,left(coalesce(payload->>'email',''),254),left(coalesce(payload->>'phone',''),25),coalesce((payload->>'showEmail')::boolean,false),coalesce((payload->>'showPhone')::boolean,false))
  on conflict(user_id) do update set email=excluded.email,phone=excluded.phone,show_email=excluded.show_email,show_phone=excluded.show_phone;
+ insert into bc_private.founder_reviews(user_id,legal_name,business_address,business_website) values(uid,left(btrim(coalesce(payload->>'legal_name','')),120),left(btrim(coalesce(payload->>'business_address','')),300),left(btrim(coalesce(payload->>'business_website','')),500)) on conflict(user_id) do update set legal_name=excluded.legal_name,business_address=excluded.business_address,business_website=excluded.business_website,updated_at=now();
  return jsonb_build_object('ok',true);
  elsif action='start_blue_trial' then
  if not exists(select 1 from public.bc_profiles where id=uid) then raise exception 'Create your business profile first'; end if;
@@ -94,8 +100,8 @@ begin
  return jsonb_build_object('ok',true);
  elsif action='admin_list' then
  if not is_admin then raise exception 'Founder access required'; end if;
- select coalesce(jsonb_agg(to_jsonb(p)||jsonb_build_object('application',to_jsonb(a)) order by a.updated_at desc nulls last),'[]'::jsonb) into result
- from public.bc_profiles p left join bc_private.applications a on p.id=a.user_id;
+ select coalesce(jsonb_agg(to_jsonb(p)||jsonb_build_object('application',to_jsonb(a),'private_contact',to_jsonb(c),'founder_review',to_jsonb(r)) order by a.updated_at desc nulls last),'[]'::jsonb) into result
+ from public.bc_profiles p left join bc_private.applications a on p.id=a.user_id left join bc_private.contacts c on p.id=c.user_id left join bc_private.founder_reviews r on p.id=r.user_id;
  return result;
  elsif action='badge' then
  if not is_admin then raise exception 'Founder access required'; end if;
@@ -158,6 +164,7 @@ notify pgrst,'reload schema';
 -- Explicit deny policies: private records are accessible only through checked RPC.
 create policy bc_no_direct_access on bc_private.admins for all to authenticated using(false) with check(false);
 create policy bc_no_direct_access on bc_private.contacts for all to authenticated using(false) with check(false);
+create policy bc_no_direct_access on bc_private.founder_reviews for all to authenticated using(false) with check(false);
 create policy bc_no_direct_access on bc_private.applications for all to authenticated using(false) with check(false);
 create policy bc_no_direct_access on bc_private.badge_audit for all to authenticated using(false) with check(false);
 create policy bc_no_direct_access on bc_private.threads for all to authenticated using(false) with check(false);
