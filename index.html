@@ -50,7 +50,7 @@ button:focus-visible,a:focus-visible{outline:3px solid #7453cc;outline-offset:3p
 
 /* Full-screen business profiles. Other dialogs keep their compact layout. */
 dialog.profile-fullscreen{position:fixed;inset:0;margin:0;width:100vw;max-width:none;height:100vh;height:100dvh;max-height:none;padding:0;border-radius:0;background:#f6f7fb;color:#142033;overflow:auto;overscroll-behavior:contain;box-shadow:none}
-.profile-fullscreen #dialogContent{min-height:100%;width:100%}
+.profile-fullscreen #dialogContent{min-height:100%;width:100%}.section-page{max-width:850px;margin:0 auto;padding:94px clamp(18px,4vw,48px) 54px}.section-page h2{font-size:clamp(28px,4vw,42px);margin-bottom:12px}.section-page .panel{margin-top:20px}@media(max-width:600px){.section-page{padding-top:82px}}
 .profile-fullscreen>.close{position:fixed;top:18px;left:clamp(18px,4vw,64px);z-index:4;float:none;width:auto;height:40px;padding:0 14px;display:flex;align-items:center;gap:8px;border:1px solid #d4daea;border-radius:10px;background:#f2f3fb;color:#1c2b44;font-size:13px;font-weight:700}
 .profile-page{min-height:100%;padding-bottom:40px}
 .profile-toolbar{position:sticky;top:0;z-index:3;height:76px;display:flex;align-items:center;justify-content:flex-end;padding:0 clamp(18px,4vw,64px);background:#ffffffed;border-bottom:1px solid #dce1ed;backdrop-filter:blur(12px)}
@@ -185,14 +185,14 @@ function tr(){return translations[currentLanguage]||translations.en}
 function setLanguage(language){currentLanguage=translations[language]?language:'en';const t=tr();localStorage.setItem('bc_language',currentLanguage);document.documentElement.lang=currentLanguage;document.documentElement.dir=currentLanguage==='ar'?'rtl':'ltr';document.body.classList.toggle('rtl',currentLanguage==='ar');const set=(id,value,html=false)=>{const el=$(id);if(el)html?el.innerHTML=value:el.textContent=value};set('languageLabel',t.langLabel);set('languageTitle',t.langTitle);set('languageText',t.langText);set('navDiscover',t.discover);set('navSaved',t.connections);set('navMessages',t.messages);set('profile',user?t.account:t.signIn);set('heroEyebrow',t.eyebrow);set('heroTitle',t.hero,true);set('heroDescription',t.heroDescription);set('tagWelcome',t.welcome);set('tagBorders',t.borders);set('tagGrow',t.grow);set('filterTitle',t.find);set('industryLabel',t.industry);set('allIndustries',t.allIndustries);set('meetingLabel',t.meeting);set('meetingHint',t.meetingHint);set('verifiedLabel',t.verified);set('reset',t.reset);set('query',t.search);$('query').placeholder=t.search;set('grid',t.grid);set('swipe',t.swipe);set('promoTitle',t.promoTitle);set('promoText',t.promoText);set('promoPill',t.promoPill);set('promoOffer',t.promoOffer);set('apply',t.promoButton);set('stepsTitle',t.stepsTitle);set('stepOne',t.stepOne,true);set('stepTwo',t.stepTwo,true);set('stepThree',t.stepThree,true);set('openForAll',t.openForAll);set('siteFooter',t.footer);document.querySelectorAll('[data-language]').forEach(button=>button.classList.toggle('active',button.dataset.language===currentLanguage));if(typeof render==='function')render()}
 document.querySelectorAll('[data-language]').forEach(button=>button.onclick=()=>{setLanguage(button.dataset.language);const more=button.closest('details');if(more)more.removeAttribute('open')});
 let dialogGeneration=0;
-function open(content,{fullScreen=false,label='Business Connect'}={}){
+function open(content,{fullScreen=true,label='Business Connect'}={}){
 dialogGeneration++;
 const modal=$('modal'),close=modal.querySelector('.close');
 modal.classList.toggle('profile-fullscreen',fullScreen);
 modal.setAttribute('aria-label',label);
-close.innerHTML=fullScreen?'← <span>Back to people</span>':'×';
-close.setAttribute('aria-label',fullScreen?'Back to people':'Close dialog');
-$('dialogContent').innerHTML=content;
+close.innerHTML=fullScreen?'← <span>Back</span>':'×';
+close.setAttribute('aria-label',fullScreen?'Close full-screen page':'Close dialog');
+$('dialogContent').innerHTML=fullScreen&&!content.includes('class="profile-page"')?'<section class="section-page">'+content+'</section>':content;
 modal.scrollTop=0;
 if(!modal.open)modal.showModal();
 document.body.classList.add('dialog-open');
