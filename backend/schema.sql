@@ -27,8 +27,9 @@ create unique index bc_one_founder on public.bc_profiles(founder) where founder;
 alter table public.bc_profiles enable row level security;
 revoke all on public.bc_profiles from anon, authenticated;
 create policy bc_public_profiles on public.bc_profiles for select to anon,authenticated using(true);
-create view public.bc_profiles_public with (security_barrier=true) as select id,name,role,company,industry,country,city,meet,bio,business_logo_url,verified,founder,verification_source,verified_until,created_at from public.bc_profiles;
+create view public.bc_profiles_public with (security_barrier=true,security_invoker=true) as select id,name,role,company,industry,country,city,meet,bio,business_logo_url,verified,founder,verification_source,verified_until,created_at from public.bc_profiles;
 revoke all on public.bc_profiles_public from public;
+grant select (id,name,role,company,industry,country,city,meet,bio,business_logo_url,verified,founder,verification_source,verified_until,created_at) on public.bc_profiles to anon,authenticated;
 grant select on public.bc_profiles_public to anon,authenticated;
 
 create table bc_private.admins(user_id uuid primary key references auth.users(id), created_at timestamptz not null default now());
