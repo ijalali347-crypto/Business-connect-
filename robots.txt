@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ijalali347-crypto.github.io/Business-connect-/sitemap.xml
