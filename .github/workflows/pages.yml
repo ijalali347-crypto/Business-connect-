@@ -22,7 +22,9 @@ jobs:
       - name: Prepare public files
         run: |
           mkdir -p _site
-          cp index.html sitemap.xml robots.txt google473e67c6f6ae4d42.html _site/
+          cp index.html sitemap.xml robots.txt google473e67c6f6ae4d42.html manifest.webmanifest sw.js _site/
+          mkdir -p _site/icons
+          cp -r icons/. _site/icons/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

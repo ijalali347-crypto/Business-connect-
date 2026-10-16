@@ -1,0 +1,18 @@
+{
+  "name": "Business Connect",
+  "short_name": "Business Connect",
+  "description": "Discover business partners, connect privately and grow across borders.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#6653e8",
+  "icons": [
+    {
+      "src": "./icons/business-connect.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
