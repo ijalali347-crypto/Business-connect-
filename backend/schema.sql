@@ -42,7 +42,7 @@ create table bc_private.badge_audit(id bigint generated always as identity prima
 create table bc_private.threads(id uuid primary key default gen_random_uuid(), starter uuid not null references public.bc_profiles(id), receiver uuid not null references public.bc_profiles(id), status text not null default 'pending' check(status in ('pending','accepted','declined')), pair_a uuid generated always as (least(starter,receiver)) stored, pair_b uuid generated always as (greatest(starter,receiver)) stored, created_at timestamptz not null default now(), unique(pair_a,pair_b), check(starter<>receiver));
 create index bc_thread_starter on bc_private.threads(starter);
 create index bc_thread_receiver on bc_private.threads(receiver);
-create table bc_private.messages(id bigint generated always as identity primary key, thread_id uuid not null references bc_private.threads(id) on delete cascade, sender uuid not null references public.bc_profiles(id), body text not null check(length(btrim(body)) between 1 and 2000), created_at timestamptz not null default now());
+create table bc_private.messages(id bigint generated always as identity primary key, thread_id uuid not null references bc_private.threads(id) on delete cascade, sender uuid not null references public.bc_profiles(id), body text not null check(length(btrim(body)) between 1 and 2000), created_at timestamptz not null default now(), seen_at timestamptz);
 create index bc_messages_thread on bc_private.messages(thread_id,id);
 alter table bc_private.admins enable row level security;
 alter table bc_private.contacts enable row level security;
@@ -129,6 +129,9 @@ begin
  select * into t from bc_private.threads where pair_a=least(uid,target) and pair_b=greatest(uid,target);
  if not found then return jsonb_build_object('thread',null,'messages','[]'::jsonb); end if;
  if uid not in(t.starter,t.receiver) then raise exception 'Access denied'; end if;
+ if t.receiver=uid then
+   update bc_private.messages set seen_at=now() where thread_id=t.id and sender<>uid and seen_at is null;
+ end if;
  select coalesce(jsonb_agg(to_jsonb(m) order by m.id),'[]'::jsonb) into result from (select * from bc_private.messages where thread_id=t.id order by id desc limit 200) m;
  return jsonb_build_object('thread',to_jsonb(t),'messages',result);
  elsif action='send' then
