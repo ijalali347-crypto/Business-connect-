@@ -14,6 +14,7 @@ create table public.bc_profiles (
  bio text not null check(length(bio) between 1 and 400),
  business_logo_url text not null default '' check(length(business_logo_url)<=500),
  business_cover_url text not null default '' check(length(business_cover_url)<=500),
+ website_url text not null default '' check(length(website_url)<=500 and (website_url='' or website_url ~ '^https?://')),
  email text not null default '' check(length(email)<=254),
  phone text not null default '' check(length(phone)<=25),
  verified boolean not null default false,
@@ -28,7 +29,7 @@ create unique index bc_one_founder on public.bc_profiles(founder) where founder;
 alter table public.bc_profiles enable row level security;
 revoke all on public.bc_profiles from anon, authenticated;
 create policy bc_public_profiles on public.bc_profiles for select to anon,authenticated using(true);
-create view public.bc_profiles_public with (security_barrier=true,security_invoker=true) as select id,name,role,company,industry,country,city,meet,bio,business_logo_url,business_cover_url,verified,founder,verification_source,verified_until,created_at from public.bc_profiles;
+create view public.bc_profiles_public with (security_barrier=true,security_invoker=true) as select id,name,role,company,industry,country,city,meet,bio,business_logo_url,business_cover_url,website_url,verified,founder,verification_source,verified_until,created_at from public.bc_profiles;
 revoke all on public.bc_profiles_public from public;
 grant select (id,name,role,company,industry,country,city,meet,bio,business_logo_url,verified,founder,verification_source,verified_until,created_at) on public.bc_profiles to anon,authenticated;
 grant select on public.bc_profiles_public to anon,authenticated;
@@ -72,11 +73,11 @@ begin
  return jsonb_build_object('id',uid,'admin',is_admin,'profile',(select to_jsonb(p) from public.bc_profiles p where id=uid),'contacts',(select to_jsonb(c) from bc_private.contacts c where user_id=uid),'founder_review',(select to_jsonb(r) from bc_private.founder_reviews r where user_id=uid),'application',(select to_jsonb(a) from bc_private.applications a where user_id=uid),'trial_slots_remaining',greatest(0,100-(select count(*) from public.bc_profiles where trial_started_at is not null)));
  elsif action='save_profile' then
  if jsonb_typeof(payload->'meet')<>'array' then raise exception 'Choose meeting countries'; end if;
- insert into public.bc_profiles(id,name,role,company,industry,country,city,meet,bio,business_logo_url,business_cover_url,email,phone)
- values(uid,btrim(payload->>'name'),btrim(payload->>'role'),btrim(payload->>'company'),payload->>'industry',btrim(payload->>'country'),btrim(payload->>'city'),array(select jsonb_array_elements_text(payload->'meet')),btrim(payload->>'bio'),left(coalesce(payload->>'business_logo_url',''),500),left(coalesce(payload->>'business_cover_url',''),500),
+ insert into public.bc_profiles(id,name,role,company,industry,country,city,meet,bio,business_logo_url,business_cover_url,website_url,email,phone)
+ values(uid,btrim(payload->>'name'),btrim(payload->>'role'),btrim(payload->>'company'),payload->>'industry',btrim(payload->>'country'),btrim(payload->>'city'),array(select jsonb_array_elements_text(payload->'meet')),btrim(payload->>'bio'),left(coalesce(payload->>'business_logo_url',''),500),left(coalesce(payload->>'business_cover_url',''),500),case when coalesce(payload->>'business_website','')='' then '' when payload->>'business_website' ~ '^https?://' then left(payload->>'business_website',500) else '' end,
  case when coalesce((payload->>'showEmail')::boolean,false) then coalesce(payload->>'email','') else '' end,
  case when coalesce((payload->>'showPhone')::boolean,false) then coalesce(payload->>'phone','') else '' end)
- on conflict(id) do update set name=excluded.name,role=excluded.role,company=excluded.company,industry=excluded.industry,country=excluded.country,city=excluded.city,meet=excluded.meet,bio=excluded.bio,business_logo_url=excluded.business_logo_url,business_cover_url=excluded.business_cover_url,email=excluded.email,phone=excluded.phone;
+ on conflict(id) do update set name=excluded.name,role=excluded.role,company=excluded.company,industry=excluded.industry,country=excluded.country,city=excluded.city,meet=excluded.meet,bio=excluded.bio,business_logo_url=excluded.business_logo_url,business_cover_url=excluded.business_cover_url,website_url=excluded.website_url,email=excluded.email,phone=excluded.phone;
  insert into bc_private.contacts(user_id,email,phone,show_email,show_phone) values(uid,coalesce(nullif(left(coalesce(payload->>'email',''),254),''),(select email from auth.users where id=uid)),left(coalesce(payload->>'phone',(select phone from bc_private.contacts where user_id=uid),''),25),false,false)
  on conflict(user_id) do update set email=excluded.email,phone=excluded.phone,show_email=false,show_phone=false;
  insert into bc_private.founder_reviews(user_id,legal_name,business_address,business_website) values(uid,left(btrim(coalesce(payload->>'legal_name','')),120),left(btrim(coalesce(payload->>'business_address','')),300),left(btrim(coalesce(payload->>'business_website','')),500)) on conflict(user_id) do update set legal_name=excluded.legal_name,business_address=excluded.business_address,business_website=excluded.business_website,updated_at=now();
